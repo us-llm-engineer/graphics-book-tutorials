@@ -73,21 +73,21 @@ One wavefront pass is one sample for every pixel; the loop above runs once per b
 
 **Estimator.** A pixel value is the integral over light paths $\bar{x}$ of the measurement contribution $f$; the renderer averages $N$ independent samples
 
-$$\hat{I}_N=\frac{1}{N}\sum_{i=1}^{N}\frac{f(\bar{x}_i)}{p(\bar{x}_i)},\qquad \operatorname{Var}[\hat{I}_N]=\frac{\sigma^{2}}{N},\qquad \mathrm{RMSE}=\frac{\sigma}{\sqrt{N}} .$$
+$$\hat{I}_N=\frac{1}{N}\sum_{i=1}^{N}\frac{f(\bar{x}_i)}{p(\bar{x}_i)},\qquad \mathrm{Var}[\hat{I}_N]=\frac{\sigma^{2}}{N},\qquad \mathrm{RMSE}=\frac{\sigma}{\sqrt{N}} .$$
 
-**Lambertian scattering and next-event estimation.** With $f_r=\rho/\pi$ and cosine-weighted sampling ($p_\omega=\cos\theta/\pi$) the throughput is multiplied by $\rho$ per bounce. A light point sampled uniformly by area has solid-angle density $p_\omega=p_A\,r^{2}/|\cos\theta_\ell|$, and the direct contribution is
+**Lambertian scattering and next-event estimation.** With $f_r=\rho/\pi$ and cosine-weighted sampling ($p_\omega=\cos\theta/\pi$) the throughput is multiplied by $\rho$ per bounce. A light point sampled uniformly by area has solid-angle density $p_\omega=p_Ar^{2}/|\cos\theta_\ell|$, and the direct contribution is
 
-$$L_{\mathrm{direct}}=T\,\frac{\rho}{\pi}\cos\theta\,\frac{L_e\,w_{\ell}}{p_\omega^{\ell}} .$$
+$$L_{\mathrm{direct}}=T\frac{\rho}{\pi}\cos\theta\frac{L_ew_{\ell}}{p_\omega^{\ell}} .$$
 
 **Multiple importance sampling** combines light sampling and BSDF sampling with the power heuristic ($\beta=2$):
 
 $$w_a(x)=\frac{p_a(x)^{2}}{p_a(x)^{2}+p_b(x)^{2}} .$$
 
-**Russian roulette** (from depth 3) keeps the estimator unbiased: with $q=\operatorname{clamp}\!\big(\max_c T_c,\,0.05,\,0.95\big)$ a path survives with probability $q$ and is reweighted $T\leftarrow T/q$.
+**Russian roulette** (from depth 3) keeps the estimator unbiased: with $q=\mathrm{clamp}\big(\max_c T_c,0.05,0.95\big)$ a path survives with probability $q$ and is reweighted $T\leftarrow T/q$.
 
 **Furnace oracle.** In a closed furnace of albedo $\rho$ and emission $L_e$, truncating at maximum depth $D$ gives exactly the partial Neumann series
 
-$$L_D=L_e\sum_{k=0}^{D}\rho^{k}\;\longrightarrow\;\frac{L_e}{1-\rho}\quad(D\to\infty),$$
+$$L_D=L_e\sum_{k=0}^{D}\rho^{k}\longrightarrow\frac{L_e}{1-\rho}\quad(D\to\infty),$$
 
 which the three renderers must reproduce (Figure 2 below).
 
@@ -97,15 +97,15 @@ $$\mathbb{E}[K]=\sum_i\Big(1-(1-p_i)^{32}\Big),\qquad H=-\sum_i p_i\log_2 p_i .$
 
 **Cost model.** Render time grows linearly with pixel count $P$ (megapixels), $T_{\mathrm{arm}}(P)=\alpha+\beta P$, so the speedup tends to a limit set by the per-pixel costs
 
-$$S(P)=\frac{\alpha_{\mathrm{mk}}+\beta_{\mathrm{mk}}P}{\alpha_{\mathrm{wf}}+\beta_{\mathrm{wf}}P}\;\xrightarrow{P\to\infty}\;\frac{\beta_{\mathrm{mk}}}{\beta_{\mathrm{wf}}} .$$
+$$S(P)=\frac{\alpha_{\mathrm{mk}}+\beta_{\mathrm{mk}}P}{\alpha_{\mathrm{wf}}+\beta_{\mathrm{wf}}P}\xrightarrow{P\to\infty}\frac{\beta_{\mathrm{mk}}}{\beta_{\mathrm{wf}}} .$$
 
-**Roofline.** Attainable throughput is $P_{\mathrm{att}}=\min\!\big(P_{\mathrm{peak}},\,B\cdot I\big)$ with arithmetic intensity $I$ (FLOP per DRAM byte), ridge point $I^{*}=P_{\mathrm{peak}}/B$ and $P_{\mathrm{peak}}=N_{\mathrm{SM}}\cdot 64\cdot 2\cdot f_{\mathrm{SM}}$; both roofs are read from profiler counters.
+**Roofline.** Attainable throughput is $P_{\mathrm{att}}=\min\big(P_{\mathrm{peak}},B\cdot I\big)$ with arithmetic intensity $I$ (FLOP per DRAM byte), ridge point $I^{*}=P_{\mathrm{peak}}/B$ and $P_{\mathrm{peak}}=N_{\mathrm{SM}}\cdot 64\cdot 2\cdot f_{\mathrm{SM}}$; both roofs are read from profiler counters.
 
 **Surface-area heuristic.** The expected cost of a BVH for a ray that hits the root box is
 
-$$C=\sum_{n\in\mathrm{internal}}\frac{A(n)}{A(\mathrm{root})}+\sum_{l\in\mathrm{leaves}}\frac{A(l)}{A(\mathrm{root})}\,|l| .$$
+$$C=\sum_{n\in\mathrm{internal}}\frac{A(n)}{A(\mathrm{root})}+\sum_{l\in\mathrm{leaves}}\frac{A(l)}{A(\mathrm{root})}|l| .$$
 
-**Variance concentration.** For per-pixel variances sorted ascending with Lorenz curve $\mathcal{L}(q)$, the Gini coefficient is $G=1-2\int_0^1\mathcal{L}(q)\,dq$. **Path survival:** $S_k=(E_k-E_{k-1})/N$ from extension-ray counts $E_d$ at depth cap $d$, with a geometric tail $S_k\approx S_{k_0}r^{\,k-k_0}$. **Avalanche test:** a bit-flip probability $\hat p$ from $n$ trials is scored as $z=(\hat p-\tfrac12)/\sqrt{1/(4n)}$.
+**Variance concentration.** For per-pixel variances sorted ascending with Lorenz curve $\mathcal{L}(q)$, the Gini coefficient is $G=1-2\int_0^1\mathcal{L}(q)dq$. **Path survival:** $S_k=(E_k-E_{k-1})/N$ from extension-ray counts $E_d$ at depth cap $d$, with a geometric tail $S_k\approx S_{k_0}r^{k-k_0}$. **Avalanche test:** a bit-flip probability $\hat p$ from $n$ trials is scored as $z=(\hat p-\tfrac12)/\sqrt{1/(4n)}$.
 
 ## Visualizations
 
@@ -120,7 +120,7 @@ Every figure is drawn by the code in this repository from measurements it took i
 </tr>
 <tr>
 <td width="50%"><a href="wavefront-vs-megakernel-path-tracing/docs/figures/stages.svg"><img src="wavefront-vs-megakernel-path-tracing/docs/figures/stages.svg" alt="Instrumented wavefront stage breakdown"></a><br><sub><b>Where the wavefront time goes</b> per stage (instrumented run). Source: <code>results/stage-times.run.txt</code>.</sub></td>
-<td width="50%"><a href="wavefront-vs-megakernel-path-tracing/docs/figures/analysis/fig-07-scaling.svg"><img src="wavefront-vs-megakernel-path-tracing/docs/figures/analysis/fig-07-scaling.svg" alt="Render time against pixel count and the speedup limit"></a><br><sub><b>Scaling law</b> $T=\alpha+\beta P$ and the speedup limit. Source: <code>results/stats/stats.json</code> (<code>scaling</code>).</sub></td>
+<td width="50%"><a href="wavefront-vs-megakernel-path-tracing/docs/figures/analysis/fig-07-scaling.svg"><img src="wavefront-vs-megakernel-path-tracing/docs/figures/analysis/fig-07-scaling.svg" alt="Render time against pixel count and the speedup limit"></a><br><sub><b>Scaling law</b> T = α + β·P and the speedup limit. Source: <code>results/stats/stats.json</code> (<code>scaling</code>).</sub></td>
 </tr>
 </table>
 
@@ -128,8 +128,8 @@ Every figure is drawn by the code in this repository from measurements it took i
 
 <table>
 <tr>
-<td width="50%"><a href="wavefront-vs-megakernel-path-tracing/docs/figures/analysis/fig-01-convergence.svg"><img src="wavefront-vs-megakernel-path-tracing/docs/figures/analysis/fig-01-convergence.svg" alt="RMSE against sample count with fitted log-log slope"></a><br><sub><b>Figure 1, convergence.</b> RMSE follows $N^{-1/2}$ (slope -0.502 for $N\ge16$). Source: <code>stats.json</code> (<code>convergence</code>).</sub></td>
-<td width="50%"><a href="wavefront-vs-megakernel-path-tracing/docs/figures/analysis/fig-02-bias.svg"><img src="wavefront-vs-megakernel-path-tracing/docs/figures/analysis/fig-02-bias.svg" alt="Furnace radiance against the truncated series with residuals"></a><br><sub><b>Figure 2, bias.</b> Furnace test against $L_e\sum\rho^k$; residual at most 1.2e-03. Source: <code>stats.json</code> (<code>furnace</code>).</sub></td>
+<td width="50%"><a href="wavefront-vs-megakernel-path-tracing/docs/figures/analysis/fig-01-convergence.svg"><img src="wavefront-vs-megakernel-path-tracing/docs/figures/analysis/fig-01-convergence.svg" alt="RMSE against sample count with fitted log-log slope"></a><br><sub><b>Figure 1, convergence.</b> RMSE follows N^(−1/2) (slope -0.502 for N ≥ 16). Source: <code>stats.json</code> (<code>convergence</code>).</sub></td>
+<td width="50%"><a href="wavefront-vs-megakernel-path-tracing/docs/figures/analysis/fig-02-bias.svg"><img src="wavefront-vs-megakernel-path-tracing/docs/figures/analysis/fig-02-bias.svg" alt="Furnace radiance against the truncated series with residuals"></a><br><sub><b>Figure 2, bias.</b> Furnace test against Lₑ·Σρᵏ; residual at most 1.2e-03. Source: <code>stats.json</code> (<code>furnace</code>).</sub></td>
 </tr>
 <tr>
 <td width="50%"><a href="wavefront-vs-megakernel-path-tracing/docs/figures/analysis/fig-03-variance.svg"><img src="wavefront-vs-megakernel-path-tracing/docs/figures/analysis/fig-03-variance.svg" alt="Lorenz curves of per-pixel variance"></a><br><sub><b>Figure 3, variance.</b> Lorenz curves: Gini 0.92, 0.83 and 0.91; the top 1% of pixels hold 79%, 46% and 82% of the variance. Source: <code>stats.json</code> (<code>variance</code>).</sub></td>
