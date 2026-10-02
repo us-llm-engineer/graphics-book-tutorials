@@ -1,0 +1,1 @@
+ncu --csv --print-units base --target-processes all --metrics dram__bytes.sum.peak_sustained,dram__cycles_elapsed.avg.per_second,sm__cycles_elapsed.avg.per_second,device__attribute_multiprocessor_count build/wf render --scene divergence --width 64 --height 36 --spp 1 --seed 1 --mode megakernel
