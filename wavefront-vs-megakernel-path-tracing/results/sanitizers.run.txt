@@ -1,0 +1,28 @@
+# command: WF_BUILD_DIR=build bash scripts/run_sanitizers.sh --quick; started 2026-10-02T02:17:36Z
+exit=0
+{
+  "schema_version": 1,
+  "runs": [
+    {
+      "tool": "compute-sanitizer",
+      "command": "compute-sanitizer --tool memcheck --error-exitcode 1 build/wf render --scene divergence --width 16 --height 9 --spp 2 --seed 1 --mode megakernel --out results/sanitizer-megakernel",
+      "exit_code": 0,
+      "error_count": 0,
+      "first_failure": ""
+    },
+    {
+      "tool": "compute-sanitizer",
+      "command": "compute-sanitizer --tool memcheck --error-exitcode 1 build/wf render --scene divergence --width 16 --height 9 --spp 2 --seed 1 --mode wavefront --out results/sanitizer-wavefront",
+      "exit_code": 0,
+      "error_count": 0,
+      "first_failure": ""
+    },
+    {
+      "tool": "asan",
+      "command": "NOT RUN: no build/wf_asan (configure a sanitizer build with -DWF_SANITIZE=ON)",
+      "exit_code": -1,
+      "error_count": 0,
+      "first_failure": ""
+    }
+  ]
+}

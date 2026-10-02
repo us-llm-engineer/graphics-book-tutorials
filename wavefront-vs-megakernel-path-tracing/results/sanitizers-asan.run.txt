@@ -1,0 +1,56 @@
+# command: WF_BUILD_DIR=build bash scripts/run_sanitizers.sh --quick (build/wf_asan is the WF_SANITIZE=ON build); started 2026-10-02T02:37:25Z
+exit=0
+{
+  "schema_version": 1,
+  "runs": [
+    {
+      "tool": "compute-sanitizer",
+      "command": "compute-sanitizer --tool memcheck --error-exitcode 1 build/wf render --scene divergence --width 16 --height 9 --spp 2 --seed 1 --mode megakernel --out results/sanitizer-megakernel",
+      "exit_code": 0,
+      "error_count": 0,
+      "first_failure": ""
+    },
+    {
+      "tool": "compute-sanitizer",
+      "command": "compute-sanitizer --tool memcheck --error-exitcode 1 build/wf render --scene divergence --width 16 --height 9 --spp 2 --seed 1 --mode wavefront --out results/sanitizer-wavefront",
+      "exit_code": 0,
+      "error_count": 0,
+      "first_failure": ""
+    },
+    {
+      "tool": "asan",
+      "command": "env ASAN_OPTIONS=detect_leaks=0 build/wf_asan render --scene divergence --width 16 --height 9 --spp 2 --seed 1 --mode cpu --out results/sanitizer-asan-cpu",
+      "exit_code": 0,
+      "error_count": 0,
+      "first_failure": ""
+    },
+    {
+      "tool": "asan",
+      "command": "NOT RUN as a project check (megakernel): AddressSanitizer aborts inside libcuda; env ASAN_OPTIONS=detect_leaks=0 build/wf_asan render --scene divergence --width 16 --height 9 --spp 2 --seed 1 --mode megakernel --out results/sanitizer-asan-megakernel",
+      "exit_code": -1,
+      "error_count": 0,
+      "first_failure": ""
+    },
+    {
+      "tool": "asan",
+      "command": "NOT RUN as a project check (wavefront): AddressSanitizer aborts inside libcuda; env ASAN_OPTIONS=detect_leaks=0 build/wf_asan render --scene divergence --width 16 --height 9 --spp 2 --seed 1 --mode wavefront --out results/sanitizer-asan-wavefront",
+      "exit_code": -1,
+      "error_count": 0,
+      "first_failure": ""
+    }
+  ]
+}
+
+--- raw AddressSanitizer output of the GPU modes (evidence for the driver note):
+=================================================================
+==280515==ERROR: AddressSanitizer: attempting double-free on 0x6030000057d0 in thread T0:
+    #0 0x723cf4ab46b7 in free (/lib64/libasan.so.6+0xb46b7)
+    #1 0x723cef3d0e44  (/usr/lib/wsl/drivers/nvdm.inf_amd64_b171f6ce1ffe1278/libcuda.so.1.1+0x515e44)
+    #2 0x723cef3e4888  (/usr/lib/wsl/drivers/nvdm.inf_amd64_b171f6ce1ffe1278/libcuda.so.1.1+0x529888)
+    #3 0x723cef20ebcc  (/usr/lib/wsl/drivers/nvdm.inf_amd64_b171f6ce1ffe1278/libcuda.so.1.1+0x353bcc)
+    #4 0x723cef20ff7b  (/usr/lib/wsl/drivers/nvdm.inf_amd64_b171f6ce1ffe1278/libcuda.so.1.1+0x354f7b)
+    #5 0x723cef1d0263  (/usr/lib/wsl/drivers/nvdm.inf_amd64_b171f6ce1ffe1278/libcuda.so.1.1+0x315263)
+    #6 0x723cef269811  (/usr/lib/wsl/drivers/nvdm.inf_amd64_b171f6ce1ffe1278/libcuda.so.1.1+0x3ae811)
+    #7 0x723cef1f571a in cuInit (/usr/lib/wsl/drivers/nvdm.inf_amd64_b171f6ce1ffe1278/libcuda.so.1.1+0x33a71a)
+    #8 0x5d0498 in libcudart_static_aa4a6bcb5fce58be20d542d9b467101e0a9360a5 (build/wf_asan
+    #9 0x5d0667 in libcudart_static_0bf7336e71b5df655f7fe4ef2dea52179e6fcf82 (build/wf_asan

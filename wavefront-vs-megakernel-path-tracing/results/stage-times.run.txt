@@ -1,0 +1,7 @@
+# command: log/probe/probe_stage <scene> for cornell divergence trianglehv (instrumented wavefront run, 1280x720, spp 4, seed 1234, depth 8; stage timings include synchronisation); started 2026-10-02T02:32:17Z
+cornell spp4 plain 58.7 ms | instrumented total 75.4 ms
+extend 7.7 classify 16.6 lambert 15.7 metal 2.9 dielectric 2.7 shadow 9.6 compact 10.2 other 9.3  (sum 74.7 ms)
+divergence spp4 plain 79.5 ms | instrumented total 100.4 ms
+extend 24.0 classify 18.3 lambert 12.0 metal 6.9 dielectric 9.0 shadow 10.9 compact 10.0 other 8.7  (sum 99.7 ms)
+trianglehv spp4 plain 165.3 ms | instrumented total 173.4 ms
+extend 97.3 classify 15.1 lambert 9.6 metal 3.3 dielectric 2.5 shadow 25.3 compact 9.8 other 9.8  (sum 172.8 ms)

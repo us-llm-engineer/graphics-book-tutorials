@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "runs": [
+    {
+      "tool": "compute-sanitizer",
+      "command": "compute-sanitizer --tool memcheck --error-exitcode 1 build/wf render --scene divergence --width 16 --height 9 --spp 2 --seed 1 --mode megakernel --out results/sanitizer-megakernel",
+      "exit_code": 0,
+      "error_count": 0,
+      "first_failure": ""
+    },
+    {
+      "tool": "compute-sanitizer",
+      "command": "compute-sanitizer --tool memcheck --error-exitcode 1 build/wf render --scene divergence --width 16 --height 9 --spp 2 --seed 1 --mode wavefront --out results/sanitizer-wavefront",
+      "exit_code": 0,
+      "error_count": 0,
+      "first_failure": ""
+    },
+    {
+      "tool": "asan",
+      "command": "env ASAN_OPTIONS=detect_leaks=0 build/wf_asan render --scene divergence --width 16 --height 9 --spp 2 --seed 1 --mode cpu --out results/sanitizer-asan-cpu",
+      "exit_code": 0,
+      "error_count": 0,
+      "first_failure": ""
+    },
+    {
+      "tool": "asan",
+      "command": "NOT RUN as a project check (megakernel): AddressSanitizer aborts inside libcuda; env ASAN_OPTIONS=detect_leaks=0 build/wf_asan render --scene divergence --width 16 --height 9 --spp 2 --seed 1 --mode megakernel --out results/sanitizer-asan-megakernel",
+      "exit_code": -1,
+      "error_count": 0,
+      "first_failure": ""
+    },
+    {
+      "tool": "asan",
+      "command": "NOT RUN as a project check (wavefront): AddressSanitizer aborts inside libcuda; env ASAN_OPTIONS=detect_leaks=0 build/wf_asan render --scene divergence --width 16 --height 9 --spp 2 --seed 1 --mode wavefront --out results/sanitizer-asan-wavefront",
+      "exit_code": -1,
+      "error_count": 0,
+      "first_failure": ""
+    }
+  ]
+}

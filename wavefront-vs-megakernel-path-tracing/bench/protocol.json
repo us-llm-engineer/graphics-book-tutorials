@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "source": "DESIGN.md section 9",
+  "width": 1280,
+  "height": 720,
+  "spp": 64,
+  "max_depth": 8,
+  "seed": 1234,
+  "warmup": 2,
+  "reps": 5,
+  "cpu_spp": 4,
+  "scenes": ["cornell", "divergence", "trianglehv"],
+  "quick": {"width": 64, "height": 36, "spp": 4, "reps": 3, "warmup": 1, "cpu_spp": 0, "scenes": ["cornell", "divergence"]}
+}
