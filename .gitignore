@@ -1,0 +1,16 @@
+# build output
+build*/
+*.o
+*.obj
+*.a
+*.so
+# profiler captures and large raw images (the repository keeps text exports)
+*.ncu-rep
+*.pfm
+# editor and tool state
+.vscode/
+.idea/
+__pycache__/
+*.swp
+# local artifacts produced by the viewer
+screenshot-*.png
